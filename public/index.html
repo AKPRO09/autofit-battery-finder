@@ -1,1 +1,39 @@
 
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AutoFit | Battery Finder</title>
+<style>
+:root{--p:#0b5cff;--dark:#172033;--muted:#667085;--bg:#f4f7fb;--green:#027a48}*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:var(--bg);color:var(--dark)}header{background:#fff;padding:18px 7%;font-size:23px;font-weight:800}header b{color:var(--p)}
+main{max-width:950px;margin:45px auto;padding:0 18px}.hero{text-align:center;margin-bottom:25px}.hero p{color:var(--muted)}
+.card,.box{background:#fff;border-radius:16px;padding:25px;box-shadow:0 8px 25px #00000010}.search{display:flex;gap:10px}
+input{flex:1;padding:16px;border:1px solid #d0d5dd;border-radius:10px;font-size:17px;text-transform:uppercase}
+button{padding:16px 25px;background:var(--p);color:#fff;border:0;border-radius:10px;font-weight:bold;cursor:pointer}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.label{font-size:12px;color:var(--muted);font-weight:bold;margin-top:13px}.value{font-size:17px;font-weight:bold;margin-top:4px}.fit{grid-column:1/-1;border-left:5px solid var(--p)}
+.status{display:inline-block;margin-top:22px;padding:8px 13px;border-radius:20px;background:#ecfdf3;color:var(--green);font-size:12px;font-weight:bold}.warn{background:#fffaeb;color:#b54708}.error{color:#b42318}.small{font-size:13px;color:var(--muted)}
+@media(max-width:650px){.search{flex-direction:column}.grid{grid-template-columns:1fr}.fit{grid-column:auto}}
+</style></head><body>
+<header>🚗 Auto<b>Fit</b> <small class="small">SERVICE PORTAL</small></header>
+<main><div class="hero"><h1>Find the Correct Battery 🔋</h1><p>Enter a vehicle number to fetch vehicle details and match battery fitment.</p></div>
+<div class="card"><div class="search"><input id="reg" placeholder="Example: MH04AB1234"><button id="btn" onclick="searchVehicle()">🔎 Search</button></div><p class="small">Demo: MH04AB1234 or MH12XY5678</p></div>
+<div id="result"></div></main>
+<script>
+async function searchVehicle(){
+ const reg=document.getElementById("reg").value,result=document.getElementById("result"),btn=document.getElementById("btn");
+ btn.disabled=true;btn.textContent="Searching...";result.innerHTML='<div class="box">Checking vehicle and fitment...</div>';
+ try{
+  const r=await fetch("/api/vehicle-lookup",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({registration:reg})});
+  const d=await r.json();if(!r.ok)throw new Error(d.error+(d.hint?" "+d.hint:""));
+  const v=d.vehicle,f=d.fitment;
+  result.innerHTML=`<div class="status ${f?"":"warn"}">${f?"✓ FITMENT MATCHED":"⚠ VEHICLE FOUND — FITMENT NOT YET ADDED"}</div>
+  <div class="grid"><div class="box"><h2>🚗 Vehicle Details</h2>
+  <div class="label">REGISTRATION</div><div class="value">${v.registration}</div><div class="label">MAKE</div><div class="value">${v.make||"Not available"}</div>
+  <div class="label">MODEL</div><div class="value">${v.model||"Not available"}</div><div class="label">YEAR</div><div class="value">${v.year||"Not available"}</div>
+  <div class="label">FUEL TYPE</div><div class="value">${v.fuel||"Not available"}</div><div class="label">DATA SOURCE</div><div class="value">${v.source||"Unknown"}</div></div>
+  <div class="box"><h2>🔋 Battery Recommendation</h2>${f?`<div class="label">FITMENT</div><div class="value">${f.fitment}</div><div class="label">CAPACITY</div><div class="value">${f.capacity}</div><div class="label">TECHNOLOGY</div><div class="value">${f.technology}</div><div class="label">RECOMMENDED BATTERY</div><div class="value">${f.recommended_battery}</div>`:'<p class="error">No matching fitment is currently available in the database.</p>'}</div>
+  ${f?`<div class="box fit"><h2>🛠️ Service Note</h2><div class="value">${f.notes||"Verify fitment before installation."}</div></div>`:""}</div>`;
+ }catch(e){result.innerHTML=`<div class="box error">⚠️ ${e.message}</div>`}
+ finally{btn.disabled=false;btn.textContent="🔎 Search"}
+}
+document.getElementById("reg").addEventListener("keydown",e=>{if(e.key==="Enter")searchVehicle()});
+</script></body></html>
