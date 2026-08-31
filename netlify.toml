@@ -1,0 +1,8 @@
+[build]
+publish = "public"
+functions = "netlify/functions"
+
+[[redirects]]
+from = "/api/vehicle-lookup"
+to = "/.netlify/functions/vehicle-lookup"
+status = 200
