@@ -1,1 +1,5 @@
 
+[
+{"make":"TATA","model_keywords":["NEXON"],"year_from":2020,"year_to":2024,"fuel":"PETROL","fitment":"DIN50","capacity":"50 Ah","technology":"SMF","recommended_battery":"ADD ACTUAL AMARON MODEL","notes":"Verify dimensions and terminal layout before installation."},
+{"make":"TATA","model_keywords":["TIAGO"],"year_from":2018,"year_to":2024,"fuel":"PETROL","fitment":"DIN45","capacity":"45 Ah","technology":"SMF","recommended_battery":"ADD ACTUAL AMARON MODEL","notes":"Verify dimensions and terminal layout before installation."}
+]
